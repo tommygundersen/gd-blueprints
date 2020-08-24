@@ -28,15 +28,15 @@ echo Getting network information for deployment ...
 TARGET_VNET_RESOURCE_ID=$(az deployment group show -g rg-gd-networking-spokes -n spoke-BU0001A0008 --query properties.outputs.clusterVnetResourceId.value -o tsv)
 echo Will deploy cluster into VNET $TARGET_VNET_RESOURCE_ID ...
 
+mkdir -p $BASE_DIR
 echo Creating GitHub repo ...
-curl -u $GITHUB_CREDENTIALS https://api.github.com/user/repos -d '{"name":"aks-$CLUSTER_NAME", "private": true}'
-
-echo Cloning int workdir ...
-cd $BASE_DIR
-git clone https://$GITHUB_CREDENTIALS@github.com/tommygundersen/aks-$CLUSTER_NAME.git
-
+curl -u $GITHUB_CREDENTIALS https://api.github.com/user/repos -d "{\"name\":\"aks-$CLUSTER_NAME\", \"private\": true, \"auto_init\": true}"
 
 WORKING_DIR=$BASE_DIR/aks-$CLUSTER_NAME
+
+echo Cloning into $BASE_DIR ...
+git clone https://$GITHUB_CREDENTIALS@github.com/tommygundersen/aks-$CLUSTER_NAME.git $BASE_DIR/aks-$CLUSTER_NAME
+
 echo Creating directory $WORKING_DIR/.github/workflows
 mkdir -p $WORKING_DIR/.github/workflows
 
@@ -53,12 +53,14 @@ cat ../github-workflows/aks-deploy.yaml | \
     sed "s#<azure-ad-aks-admin-group-object-id>#$K8S_RBAC_AAD_ADMIN_GROUP_OBJECTID#g" \
     > $WORKING_DIR/.github/workflows/aks-deploy.yaml
 
+cp ../cluster-deployment/*.* $WORKING_DIR
+mkdir $WORKING_DIR/cluster-baseline-settings
+cp ../cluster-baseline-settings/ns-cluster-baseline-settings.yaml $WORKING_DIR/cluster-baseline-settings/ns-cluster-baseline-settings.yaml
+cp ../cluster-baseline-settings/flux.yaml $WORKING_DIR/cluster-baseline-settings/flux.yaml
+
 cd $WORKING_DIR
 git add .
 git commit -m "initial commit"
 git push origin HEAD:kick-off-workflow
 
-echo Pull Request created for initial Cluster setup in https://github.com/tommygundersen/aks-$CLUSTER_NAME repo. Please approve kick-off-workflow to start deployment.
 cd $CURRENT_DIR
-
-

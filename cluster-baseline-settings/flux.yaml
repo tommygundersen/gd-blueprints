@@ -98,8 +98,10 @@ spec:
           initialDelaySeconds: 5
           timeoutSeconds: 5
         args:
-        - --git-url=https://github.com/tommygundersen/gb-blueprints.git
+        - --git-url=https://github.com/tommygundersen/gd-blueprints.git
         - --git-branch=master
+        - --git-user=tommygundersen
+        - --git-poll-interval=2m
         - --git-path=cluster-baseline-settings
         # this configuration prevents flux from syncing changes from your cluster to the git repo. If two way sync is required, please take a look at  https://docs.fluxcd.io/en/1.19.0/tutorials/get-started/#giving-write-access
         - --git-readonly

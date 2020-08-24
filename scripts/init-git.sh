@@ -43,14 +43,13 @@ cat ../github-workflows/aks-deploy.yaml | \
     > $WORKING_DIR/.github/workflows/aks-deploy.yaml
 
 cp ../cluster-deployment/*.* $WORKING_DIR
-cp -R ../cluster-baseline-settings $WORKING_DIR
+#cp -R ../cluster-baseline-settings $WORKING_DIR
 
 cd $WORKING_DIR
 git add .
 git commit -m "initial commit"
 git push origin HEAD:kick-off-workflow
 
-echo Pull Request created for initial Cluster setup in https://github.com/tommygundersen/aks-$CLUSTER_NAME repo. Please approve kick-off-workflow to start deployment.
 cd $CURRENT_DIR
 
 
